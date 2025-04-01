@@ -27,6 +27,7 @@ class FormerPrice {
 		add_filter( 'edd_purchase_variable_prices', [ $this, 'save_recurring_license_amounts' ], 10, 2 );
 		add_filter( 'edd_format_amount', [ $this, 'add_recurring_label_to_price' ], 10, 5 );
 		add_filter( 'edd_eur_currency_filter_before', [ $this, 'remove_currency_prefix' ] );
+		add_action( 'edd_after_price_options', [ $this, 'add_vat_notice' ] );
 	}
 
 	/**
@@ -130,5 +131,21 @@ class FormerPrice {
 		}
 
 		return preg_replace( '/^.*?<span/', '<span', $formatted, 1 );
+	}
+
+	/**
+	 * Insert custom VAT notice above 'Add to cart' button
+	 * @return void
+	 */
+	public function add_vat_notice() {
+		?>
+        <span class="text-sm text-center">
+            <?php if ( $this->signup_discount > 0 ) : ?>
+                * <?php echo __( 'Renews at regular rate', 'daan-mods' ); ?><br/>
+            <?php endif; ?>
+
+			<?php echo __( 'excl. VAT for EU residents', 'daan-mods' ); ?>
+        </span>
+		<?php
 	}
 }
