@@ -27,6 +27,9 @@ class Plugin {
 
 		// Syntax Highlighter
 		add_filter( 'plugins_url', [ $this, 'modify_css_url' ], 1000, 3 );
+
+		// Easy Digital Downloads
+		new FormerPrice(); // Product Details Widget
 	}
 
 	/**
