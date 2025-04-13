@@ -143,8 +143,6 @@ class FormerPrice {
             <?php if ( $this->signup_discount > 0 ) : ?>
                 * <?php echo __( 'Renews at regular rate', 'daan-mods' ); ?><br/>
             <?php endif; ?>
-
-			<?php echo __( 'excl. VAT for EU residents', 'daan-mods' ); ?>
         </span>
 		<?php
 	}
