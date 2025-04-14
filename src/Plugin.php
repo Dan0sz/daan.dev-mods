@@ -8,6 +8,8 @@
 
 namespace Daan\Mods;
 
+use Barn2\Plugin\EDD_VAT\Checkout_Handler;
+
 class Plugin {
 	public function __construct() {
 		$this->init();
@@ -24,12 +26,32 @@ class Plugin {
 		// EDD EU VAT
 		add_filter( 'edd_eu_vat_uk_hide_checkout_input', '__return_true' );
 		add_filter( 'edd_vat_current_eu_vat_rates', [ $this, 'change_gb_to_zero_vat' ] );
+		add_action( 'plugins_loaded', [ $this, 'remove_item_price_filter' ], 21 );
 
 		// Syntax Highlighter
 		add_filter( 'plugins_url', [ $this, 'modify_css_url' ], 1000, 3 );
 
 		// Easy Digital Downloads
 		new FormerPrice(); // Product Details Widget
+	}
+
+	/**
+	 * We don't subtract VAT from the price, if VAT is reverse charged. This is a hacky approach to remove @see Checkout_Handler::cart_item_price_includes_tax()
+	 *
+	 * @return void
+	 */
+	public function remove_item_price_filter() {
+		global $wp_filter;
+
+		if ( ! isset( $wp_filter[ 'edd_cart_item_price' ] ) || ! isset( $wp_filter[ 'edd_cart_item_price' ]->callbacks[ 1000 ] ) ) {
+			return;
+		}
+
+		foreach ( $wp_filter[ 'edd_cart_item_price' ]->callbacks[ 1000 ] as $key => $callback ) {
+			if ( str_contains( $key, 'cart_item_price_includes_tax' ) ) {
+				unset( $wp_filter[ 'edd_cart_item_price' ]->callbacks[ 1000 ][ $key ] );
+			}
+		}
 	}
 
 	/**
