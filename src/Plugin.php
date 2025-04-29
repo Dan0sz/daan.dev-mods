@@ -17,7 +17,7 @@ class Plugin {
 	 * Format: { Changed Value => Original Value }
 	 */
 	const REWRITE_TEXT_FIELDS = [
-		'Item / License Key' => 'Item',
+		'License Key' => 'Item',
 	];
 
 	public function __construct() {
