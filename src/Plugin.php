@@ -11,6 +11,15 @@ namespace Daan\Mods;
 use Barn2\Plugin\EDD_VAT\Checkout_Handler;
 
 class Plugin {
+	/**
+	 * An array of translatable fields, which we want to change.
+	 *
+	 * Format: { Changed Value => Original Value }
+	 */
+	const REWRITE_TEXT_FIELDS = [
+		'Item / License Key' => 'Item',
+	];
+
 	public function __construct() {
 		$this->init();
 	}
@@ -22,6 +31,7 @@ class Plugin {
 		// EDD Software Licensing
 		add_filter( 'edd_sl_url_subdomains', [ $this, 'add_local_urls' ] );
 		add_filter( 'edd_file_download_has_access', [ $this, 'maybe_allow_download' ], 10, 3 );
+		add_filter( 'gettext_edd_sl', [ $this, 'modify_text_fields' ], 1, 3 );
 
 		// EDD EU VAT
 		add_filter( 'edd_eu_vat_uk_hide_checkout_input', '__return_true' );
@@ -109,6 +119,23 @@ class Plugin {
 		$valid_token = edd_validate_url_token( $url );
 
 		return $valid_token;
+	}
+
+	/**
+	 * Modifies lines for a few input fields.
+	 *
+	 * @param mixed $translation
+	 * @param mixed $text
+	 * @param mixed $domain
+	 *
+	 * @return mixed
+	 */
+	public function modify_text_fields( $translation, $text, $domain ) {
+		if ( in_array( $text, self::REWRITE_TEXT_FIELDS ) ) {
+			return array_search( $text, self::REWRITE_TEXT_FIELDS );
+		}
+
+		return $translation;
 	}
 
 	/**
